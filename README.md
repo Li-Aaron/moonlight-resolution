@@ -1,7 +1,15 @@
 # moonlight-resolution
 usage example:
 ```
-moonlight-resolution.exe 1920 1080 "some command"
+	Example: 
+	Set - Execute - Restore: 
+	    moonlight-resolution.exe -c 1920 1080 60 something.exe:
+	Set only: 
+	    moonlight-resolution.exe -s 1920 1080 60
+	Restore only (to maximum supported resolution): 
+	    moonlight-resolution.exe -r
+	Test: 
+	    moonlight-resolution.exe
 ```
 Functionality:
   1. change the resolution to 1920x1080 before command execuate.
