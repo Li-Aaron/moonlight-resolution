@@ -56,7 +56,8 @@ int main (
 
 	if (argc > 1) {
 		// all functional
-		if (strcmp(argv[1], "-c")) {
+		printf("%s\n", argv[1]);
+		if (!strcmp(argv[1], "-c")) {
 			if (argc == 6) {
 				dmPelsWidthSet        = atoi(argv[2]);
 				dmPelsHeightSet       = atoi(argv[3]);
@@ -71,7 +72,7 @@ int main (
 			}
 		}
 		// set only
-		else if (strcmp(argv[1], "-s")) {
+		else if (!strcmp(argv[1], "-s")) {
 			if (argc == 5) {
 				dmPelsWidthSet        = atoi(argv[2]);
 				dmPelsHeightSet       = atoi(argv[3]);
@@ -83,7 +84,7 @@ int main (
 			}
 		}
 		// restore to maximum only
-		else if (strcmp(argv[1], "-r")) {
+		else if (!strcmp(argv[1], "-r")) {
 			if (argc == 2) {
 				doRestore             = TRUE;
 			}
@@ -113,6 +114,27 @@ int main (
 	ZeroMemory(&lpDevMode, sizeof(lpDevMode));
 	lpDevMode.dmSize = sizeof(lpDevMode);
 
+	// retrive the maximum supported setting
+	result1 = TRUE;
+	for (int i = 0; result1; i++) {
+		result1 = EnumDisplaySettingsA(NULL, i, &lpDevMode);
+		// printf("supported setting : %d x %d : %d\n", lpDevMode.dmPelsWidth, lpDevMode.dmPelsHeight, lpDevMode.dmDisplayFrequency);
+
+		if (lpDevMode.dmPelsWidth >= dmPelsWidthOri && lpDevMode.dmPelsHeight >= dmPelsHeightOri) {
+			// backup largest supported resolution
+			dmPelsWidthOri  = lpDevMode.dmPelsWidth;
+			dmPelsHeightOri = lpDevMode.dmPelsHeight;
+		}
+		if (lpDevMode.dmDisplayFrequency > dmDisplayFrequencyOri) {
+			// backup largest supported frequency
+			dmDisplayFrequencyOri = lpDevMode.dmDisplayFrequency;
+		}
+	}
+
+	printf("dmPelsWidthOri:        %d\n", dmPelsWidthOri);
+	printf("dmPelsHeightOri:       %d\n", dmPelsHeightOri);
+	printf("dmDisplayFrequencyOri: %d\n", dmDisplayFrequencyOri);
+
 	if (doSet) {
 		// change the resolution
 		lpDevMode.dmPelsWidth        = dmPelsWidthSet;
@@ -133,27 +155,6 @@ int main (
 	}
 
 	if (doRestore) {
-		// retrive the maximum supported setting
-		result1 = TRUE;
-		for (int i = 0; result1; i++) {
-			result1 = EnumDisplaySettingsA(NULL, i, &lpDevMode);
-			// printf("supported setting : %d x %d : %d\n", lpDevMode.dmPelsWidth, lpDevMode.dmPelsHeight, lpDevMode.dmDisplayFrequency);
-
-			if (lpDevMode.dmPelsWidth >= dmPelsWidthOri && lpDevMode.dmPelsHeight >= dmPelsHeightOri) {
-				// backup largest supported resolution
-				dmPelsWidthOri  = lpDevMode.dmPelsWidth;
-				dmPelsHeightOri = lpDevMode.dmPelsHeight;
-			}
-			if (lpDevMode.dmDisplayFrequency > dmDisplayFrequencyOri) {
-				// backup largest supported frequency
-				dmDisplayFrequencyOri = lpDevMode.dmDisplayFrequency;
-			}
-		}
-
-		printf("dmPelsWidthOri:        %d\n", dmPelsWidthOri);
-		printf("dmPelsHeightOri:       %d\n", dmPelsHeightOri);
-		printf("dmDisplayFrequencyOri: %d\n", dmDisplayFrequencyOri);
-
 		// change the resolution
 		lpDevMode.dmPelsWidth        = dmPelsWidthOri;
 		lpDevMode.dmPelsHeight       = dmPelsHeightOri;
